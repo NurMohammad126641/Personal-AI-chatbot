@@ -1,10 +1,25 @@
 import streamlit as strlt
 from chat_bot import get_chatbot_response
+import google.generativeai as gen_ai
 
 strlt.set_page_config(
     page_title="Rabbi's AI Assistant",
     page_icon= "🤖"
 )
+
+
+
+try:
+    api_key = strlt.secrets["google_api_key"]
+    personal_data = strlt.secrets["personal_data"]
+except KeyError as e:
+    strlt.error(f"A required secret is missing! Please check your Streamlit Cloud settings. Missing key: {e}")
+    strlt.stop()
+
+# Google Generative AI কনফিগার করা
+gen_ai.configure(api_key=api_key)
+
+
 
 
 with strlt.sidebar:
@@ -24,26 +39,18 @@ strlt.title("🤖 Nur Mohammad Rabbi's AI Assistant")
 strlt.markdown("Welcome! I am a personal AI assistant. Ask me anything about Nur Mohammad Rabbi.")
 
 
-# Load the personal data (context) for the chatbot
-personal_data = strlt.secrets("personal_data")
+# ইউজারের ইনপুট নেওয়ার জন্য টেক্সট বক্স
+user_question = strlt.text_input("Ask your question here:", placeholder="e.g., What are his key skills?")
 
-# Check if data was loaded successfully
-if "Error" in personal_data:
-    strlt.error(personal_data) # Display an error message if the file is not found
-else:
-    # Get user input from a text box
-    user_question = strlt.text_input("Ask your question here:", placeholder="e.g., What are his key skills?")
-
-
-# "Get Answer" button
-    if strlt.button("Get Answer"):
-        if user_question:
-            # Show a "thinking" message while the response is being generated
-            with strlt.spinner("Finding the best answer..."):
-                response = get_chatbot_response(user_question, personal_data)
-                strlt.markdown("---")
-                strlt.write("### My Answer:")
-                strlt.markdown(response)
-        else:
-            # Show a warning if the user clicks the button without asking a question
-            strlt.warning("Please enter a question first.")
+# "Get Answer" বাটনে ক্লিক করলে
+if strlt.button("Get Answer"):
+    if user_question:
+        # "thinking" মেসেজ দেখানো
+        with strlt.spinner("Finding the best answer..."):
+            response = get_chatbot_response(user_question, personal_data)
+            strlt.markdown("---")
+            strlt.write("### My Answer:")
+            strlt.markdown(response)
+    else:
+        # প্রশ্ন না লিখলে ওয়ার্নিং দেখানো
+        strlt.warning("Please enter a question first.")
