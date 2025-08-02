@@ -1,5 +1,5 @@
 import streamlit as strlt
-from chat_bot import load_content_from_txt, get_chatbot_response
+from chat_bot import get_chatbot_response
 
 strlt.set_page_config(
     page_title="Rabbi's AI Assistant",
@@ -25,7 +25,7 @@ strlt.markdown("Welcome! I am a personal AI assistant. Ask me anything about Nur
 
 
 # Load the personal data (context) for the chatbot
-personal_data = load_content_from_txt("data.txt")
+personal_data = strlt.secrets("personal_data")
 
 # Check if data was loaded successfully
 if "Error" in personal_data:
