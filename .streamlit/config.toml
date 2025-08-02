@@ -1,0 +1,6 @@
+[theme]
+primaryColor="#33c481"  # একটি সুন্দর সবুজ অ্যাকসেন্ট কালার
+backgroundColor="#0f1116"  # ডার্ক ব্যাকগ্রাউন্ড
+secondaryBackgroundColor="#1c1f2b" # সাইডবার ও অন্যান্য এলিমেন্টের ব্যাকগ্রাউন্ড
+textColor="#ffffff" # সাদা টেক্সট
+font="sans serif"

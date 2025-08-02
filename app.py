@@ -1,56 +1,72 @@
-import streamlit as strlt
-from chat_bot import get_chatbot_response
+# app.py-এর জন্য নতুন ডিজাইনের কোড
+import streamlit as st
 import google.generativeai as gen_ai
+from PIL import Image  # ছবি যোগ করার জন্য নতুন লাইব্রেরি
+from chat_bot import get_chatbot_response  # আপনার ফাইলের নাম chat_bot.py হলে
 
-strlt.set_page_config(
-    page_title="Rabbi's AI Assistant",
-    page_icon= "🤖"
+# --- পেজ কনফিগারেশন (সবসময় প্রথমে থাকবে) ---
+st.set_page_config(
+    page_title="Nur Mohammad Rabbi | AI Assistant",
+    page_icon="🤖",
+    layout="wide"  # পেজটিকে চওড়া করার জন্য
 )
 
-
-
+# --- API এবং ডেটা লোডিং ---
 try:
-    api_key = strlt.secrets["google_api_key"]
-    personal_data = strlt.secrets["personal_data"]
+    api_key = st.secrets["google_api_key"]
+    personal_data = st.secrets["personal_data"]
+    gen_ai.configure(api_key=api_key)
 except KeyError as e:
-    strlt.error(f"A required secret is missing! Please check your Streamlit Cloud settings. Missing key: {e}")
-    strlt.stop()
+    st.error(f"A required secret is missing! Please check your Streamlit Cloud settings. Missing key: {e}", icon="🚨")
+    st.stop()
+except Exception as e:
+    st.error(f"An error occurred during API configuration: {e}", icon="🚨")
+    st.stop()
 
-# Google Generative AI কনফিগার করা
-gen_ai.configure(api_key=api_key)
+# --- সাইডবার ---
+with st.sidebar:
+    # আপনার প্রোফাইল ছবিটি এখানে লোড করুন
+    try:
+        profile_image = Image.open('profile.jpg')
+        st.image(profile_image, width=150)
+    except FileNotFoundError:
+        st.error("Profile image not found. Please add 'profile.jpg' to the root folder.")
 
+    st.title("Nur Mohammad Rabbi")
+    st.info("Analytics Engineer | Python & Automation Enthusiast")
 
+    st.markdown("---")
+    st.markdown("### 🔗 Links")
+    st.markdown("[LinkedIn](https://www.linkedin.com/in/nur-mohammad-rabbi-9a73931b6)")
+    st.markdown("[GitHub](https://github.com/NurMohammad126641)")
 
+    st.markdown("---")
+    st.success("This app is live and fully functional!", icon="✅")
 
-with strlt.sidebar:
-    strlt.title("About the ChatBot")
-    strlt.info(
-        "This Chatbot is powered by Google's Gemini Pro Model."
-        "It is designed to answer questions"
-        "Feel free to ask what you want to know"
-    )
-    strlt.markdown("---")
-    strlt.markdown("### Links")
-    strlt.markdown("[LinkedIn](http.linkedin.com/in/nur-mohammad-rabbi-9a73931b6)")
-    strlt.markdown("[GitHub](https://github.com/NurMohammad126641)")
+# --- প্রধান ইন্টারফেস ---
+st.title("🤖 AI Assistant")
+st.markdown(
+    "Welcome! I am a personal AI assistant trained on Nur Mohammad Rabbi's professional data. Feel free to ask me anything about his Rabbi.")
+st.markdown("---")
 
+# একটি এক্সপ্যান্ডারের ভেতরে চ্যাটবটের তথ্য
+with st.expander("Click here to see what I know about"):
+    st.json({
+        "Experience": "Progoti Systems (TallyKhata)",
+        "Key Skills": ["Python", "SQL", "Django", "Data Analysis", "Automation"],
+        "Education": "B.Sc. in EEE, Bangladesh University",
+        "Projects": ["Advance Monitoring Dashboard", "Redmine API Automation"]
+    })
 
-strlt.title("🤖 Nur Mohammad Rabbi's AI Assistant")
-strlt.markdown("Welcome! I am a personal AI assistant. Ask me anything about Nur Mohammad Rabbi.")
+# চ্যাট ইন্টারফেস
+user_question = st.text_input("💬 Ask your question here...", placeholder="e.g., What was his role at TallyKhata?")
 
+if user_question:
+    with st.spinner("🧠 Thinking..."):
+        response = get_chatbot_response(user_question, personal_data)
 
-# ইউজারের ইনপুট নেওয়ার জন্য টেক্সট বক্স
-user_question = strlt.text_input("Ask your question here:", placeholder="e.g., What are his key skills?")
+        # ইউজারের প্রশ্নটি দেখানো
+        st.chat_message("user").write(user_question)
 
-# "Get Answer" বাটনে ক্লিক করলে
-if strlt.button("Get Answer"):
-    if user_question:
-        # "thinking" মেসেজ দেখানো
-        with strlt.spinner("Finding the best answer..."):
-            response = get_chatbot_response(user_question, personal_data)
-            strlt.markdown("---")
-            strlt.write("### My Answer:")
-            strlt.markdown(response)
-    else:
-        # প্রশ্ন না লিখলে ওয়ার্নিং দেখানো
-        strlt.warning("Please enter a question first.")
+        # AI-এর উত্তর দেখানো
+        st.chat_message("assistant").markdown(response)
