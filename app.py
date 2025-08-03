@@ -1,14 +1,13 @@
 
 import streamlit as st
 import google.generativeai as gen_ai
-from PIL import Image  # ছবি যোগ করার জন্য নতুন লাইব্রেরি
-from chat_bot import get_chatbot_response  # আপনার ফাইলের নাম chat_bot.py হলে
+from PIL import Image  
+from chat_bot import get_chatbot_response  
 
-# --- পেজ কনফিগারেশন (সবসময় প্রথমে থাকবে) ---
 st.set_page_config(
     page_title="Nur Mohammad Rabbi | AI Assistant",
     page_icon="🤖",
-    layout="wide"  # পেজটিকে চওড়া করার জন্য
+    layout="wide"  
 )
 
 # --- API এবং ডেটা লোডিং ---
@@ -45,7 +44,7 @@ with st.sidebar:
 # --- প্রধান ইন্টারফেস ---
 st.title("🤖 AI Assistant")
 st.markdown(
-    "Welcome! I am a personal AI assistant trained on Nur Mohammad Rabbi's professional data. Feel free to ask me anything Rabbi.")
+    "Welcome! I am a personal AI assistant trained on Nur Mohammad Rabbi's professional data. Feel free to ask me anything about Rabbi.")
 st.markdown("---")
 
 # চ্যাট ইন্টারফেস
